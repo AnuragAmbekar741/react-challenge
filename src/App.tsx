@@ -6,17 +6,19 @@ import { useEmployees } from "./hooks/useEmployees"
 import { usePaginatedTransactions } from "./hooks/usePaginatedTransactions"
 import { useTransactionsByEmployee } from "./hooks/useTransactionsByEmployee"
 import { EMPTY_EMPLOYEE } from "./utils/constants"
-import { Employee } from "./utils/types"
+import { Employee, Transaction } from "./utils/types"
 
 export function App() {
   const { data: employees, ...employeeUtils } = useEmployees()
   const { data: paginatedTransactions, ...paginatedTransactionsUtils } = usePaginatedTransactions()
   const { data: transactionsByEmployee, ...transactionsByEmployeeUtils } = useTransactionsByEmployee()
+  const [allTransactions, setAllTransactions] = useState<Transaction[]>([])
+
   const [isLoading, setIsLoading] = useState(false)
 
   const transactions = useMemo(
-    () => paginatedTransactions?.data ?? transactionsByEmployee ?? null,
-    [paginatedTransactions, transactionsByEmployee]
+    () => (allTransactions?.length ? allTransactions : transactionsByEmployee ?? null),
+    [allTransactions, transactionsByEmployee]
   )
 
   const loadAllTransactions = useCallback(async () => {
@@ -42,6 +44,12 @@ export function App() {
       loadAllTransactions()
     }
   }, [employeeUtils.loading, employees, loadAllTransactions])
+
+  useEffect(() => {
+    if (paginatedTransactions?.data) {
+      setAllTransactions((prev) => [...prev, ...paginatedTransactions.data])
+    }
+  }, [paginatedTransactions])
 
   return (
     <Fragment>
