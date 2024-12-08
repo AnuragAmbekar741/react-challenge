@@ -59,9 +59,9 @@ export function App() {
         <hr className="RampBreak--l" />
 
         <InputSelect<Employee>
-          isLoading={isLoading}
+          isLoading={employees ? false : true}
           defaultValue={EMPTY_EMPLOYEE}
-          items={employees === null ? [] : [EMPTY_EMPLOYEE, ...employees]}
+          items={!employees ? [] : [...employees]}
           label="Filter by employee"
           loadingLabel="Loading employees"
           parseItem={(item) => ({
