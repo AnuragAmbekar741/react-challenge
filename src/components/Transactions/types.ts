@@ -11,7 +11,7 @@ type TransactionsProps = { transactions: Transaction[] | null }
 type TransactionPaneProps = {
   transaction: Transaction
   loading: boolean
-  approved?: boolean
+  approvedStatus?: boolean
   setTransactionApproval: SetTransactionApprovalFunction
 }
 

@@ -24,7 +24,7 @@ export function App() {
     transactionsByEmployeeUtils.invalidateData()
     await employeeUtils.fetchAll()
     await paginatedTransactionsUtils.fetchAll()
-  }, [paginatedTransactionsUtils, transactionsByEmployeeUtils])
+  }, [paginatedTransactionsUtils, transactionsByEmployeeUtils, employeeUtils])
 
   const loadTransactionsByEmployee = useCallback(
     async (employeeId: string) => {
@@ -44,11 +44,11 @@ export function App() {
     if (paginatedTransactions?.data) {
       setHasMoreTransactions(paginatedTransactions?.nextPage !== null)
       setAllTransactions((prev) => {
-        if (prev?.length) {
-          return [...prev, ...paginatedTransactions.data]
-        } else {
-          return paginatedTransactions.data
-        }
+        const newTransactions = paginatedTransactions.data.filter(
+          (transaction) => !prev?.some((t) => t.id === transaction.id)
+        )
+        if (prev) return [...prev, ...newTransactions]
+        else return [...newTransactions]
       })
     }
   }, [paginatedTransactions])
@@ -78,10 +78,8 @@ export function App() {
           })}
           onChange={async (newValue) => {
             if (newValue && newValue?.id) {
-              setAllTransactions(null)
               await loadTransactionsByEmployee(newValue?.id)
             } else {
-              setAllTransactions(null)
               await loadAllTransactions()
             }
           }}
